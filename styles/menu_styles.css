@@ -10,7 +10,7 @@
   padding: 0 1.25rem;
   background: #fff;
   border-bottom: 2px solid #e5e7eb;
-  position: fixed;
+  position: sticky;
   top: 60px;
   z-index: 10;
 
@@ -1122,7 +1122,8 @@ body.dark-mode .pmp2-chart-section {
 /* ── Floating dropdown panel ─────────────────────────────── */
 .pmp2-drop-list {
   position: absolute;
-  top: calc(100% + 4px);
+  bottom: calc(100% + 4px);
+  top: auto;
   left: 0; right: 0;
   background: var(--fmp-card, #fff);
   border: 1.5px solid var(--fmp-border, #e5e7eb);
