@@ -18,8 +18,9 @@ ALLOWED_HOSTS = [
     '.railway.app',
     '.render.com',
     '.onrender.com',
-    '.github.io',                          # GitHub Pages frontend
-    os.getenv('ALLOWED_HOST', ''),         # any custom domain via .env
+    'stayopx.onrender.com',                # exact Render URL
+    '.github.io',
+    os.getenv('ALLOWED_HOST', ''),
 ]
 
 INSTALLED_APPS = [
@@ -112,10 +113,11 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
     'http://localhost:3000',
-    'https://*.railway.app',               # Railway deployment
-    'https://*.onrender.com',              # Render deployment
-    'https://*.github.io',                 # GitHub Pages frontend
-    'https://' + os.getenv('ALLOWED_HOST', 'localhost'),  # custom domain
+    'https://*.railway.app',
+    'https://*.onrender.com',
+    'https://stayopx.onrender.com',        # exact Render URL
+    'https://*.github.io',
+    'https://' + os.getenv('ALLOWED_HOST', 'localhost'),
 ]
 
 SESSION_COOKIE_AGE         = 86400
