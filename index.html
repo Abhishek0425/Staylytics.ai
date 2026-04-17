@@ -7,7 +7,15 @@
 
 <!-- ══ AUTH LOGIC — decides what to show before page renders ════ -->
 <script>
-  window.UNILIV_API_BASE = 'http://127.0.0.1:8000';
+  // ── Auto-detect API URL ──────────────────────────────────────
+  // Local dev  → Django on your PC port 8000
+  // Production → Render/Railway cloud deployment
+  window.UNILIV_API_BASE = (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
+  )
+    ? 'http://127.0.0.1:8000'
+    : 'https://stayopx-backend.onrender.com';   // ← replace with your Render URL
 
   // Check session on load
   (function() {
@@ -135,6 +143,32 @@
 .lp-btn:disabled { opacity:.65; cursor:not-allowed; transform:none; }
 .lp-footer { margin-top:32px; text-align:center; font-size:12px; color:#94a3b8; }
 
+/* ── Password field with show/hide toggle ── */
+.lp-pw-wrap {
+  position: relative;
+  width: 100%;
+}
+.lp-pw-wrap input {
+  width: 100%;
+  padding-right: 46px;  /* room for the eye button */
+}
+.lp-pw-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+  transition: color .15s;
+  user-select: none;
+}
+.lp-pw-toggle:hover { color: #475569; }
+
 /* ══ NAVBAR AUTH ════════════════════════════════════════════════ */
 .nav-user-info { display:flex; align-items:center; gap:7px; }
 .nav-role-badge {
@@ -217,9 +251,16 @@
 
     <div class="lp-group">
       <label for="lp-password">Password</label>
-      <input type="password" id="lp-password" placeholder="Enter your password"
-             autocomplete="current-password"
-             onkeydown="if(event.key==='Enter') doLogin()">
+      <div class="lp-pw-wrap">
+        <input type="password" id="lp-password" placeholder="Enter your password"
+               autocomplete="current-password"
+               onkeydown="if(event.key==='Enter') doLogin()">
+        <button type="button" class="lp-pw-toggle" id="lp-pw-toggle"
+                onclick="togglePassword()" title="Show / hide password"
+                aria-label="Toggle password visibility">
+          👁
+        </button>
+      </div>
     </div>
 
     <button class="lp-btn" id="lp-btn" onclick="doLogin()">Sign In →</button>
@@ -745,7 +786,7 @@ async function doLogin() {
   btn.textContent = '⏳ Signing in…';
 
   try {
-    var res  = await fetch((window.UNILIV_API_BASE || 'http://127.0.0.1:8000') + '/api/auth/login/', {
+    var res  = await fetch(window.UNILIV_API_BASE + '/api/auth/login/', {
       method:      'POST',
       credentials: 'include',
       headers:     { 'Content-Type': 'application/json' },
@@ -822,7 +863,7 @@ function _applyRole(user) {
 /* Logout */
 function doLogout() {
   sessionStorage.removeItem('uniliv_user');
-  fetch((window.UNILIV_API_BASE || 'http://127.0.0.1:8000') + '/api/auth/logout/',
+  fetch(window.UNILIV_API_BASE + '/api/auth/logout/',
         { method: 'POST', credentials: 'include' })
     .finally(function() {
       // Show login overlay again instead of redirecting
@@ -841,6 +882,22 @@ function _lpError(msg) {
   var el = document.getElementById('lp-error');
   el.textContent   = '⚠ ' + msg;
   el.style.display = 'block';
+}
+
+/* Show / hide password toggle */
+function togglePassword() {
+  var inp = document.getElementById('lp-password');
+  var btn = document.getElementById('lp-pw-toggle');
+  if (inp.type === 'password') {
+    inp.type     = 'text';
+    btn.textContent = '🙈';
+    btn.title    = 'Hide password';
+  } else {
+    inp.type     = 'password';
+    btn.textContent = '👁';
+    btn.title    = 'Show password';
+  }
+  inp.focus();
 }
 </script>
 

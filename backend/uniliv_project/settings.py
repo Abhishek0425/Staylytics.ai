@@ -12,7 +12,15 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-uniliv-replace-in-producti
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.railway.app',
+    '.render.com',
+    '.onrender.com',
+    '.github.io',                          # GitHub Pages frontend
+    os.getenv('ALLOWED_HOST', ''),         # any custom domain via .env
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,6 +36,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,7 +75,6 @@ if DATABASE_URL:
         )
     }
 else:
-    # Local fallback — works without .env file
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -86,8 +94,10 @@ TIME_ZONE     = 'Asia/Kolkata'
 USE_I18N      = True
 USE_TZ        = True
 
-STATIC_URL  = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# ── Static files (WhiteNoise serves them in production) ──────────
+STATIC_URL    = '/static/'
+STATIC_ROOT   = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -102,6 +112,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
     'http://localhost:3000',
+    'https://*.railway.app',               # Railway deployment
+    'https://*.onrender.com',              # Render deployment
+    'https://*.github.io',                 # GitHub Pages frontend
+    'https://' + os.getenv('ALLOWED_HOST', 'localhost'),  # custom domain
 ]
 
 SESSION_COOKIE_AGE         = 86400
